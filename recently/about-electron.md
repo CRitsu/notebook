@@ -8,7 +8,7 @@
 
 Electron，是一个使用JS、HTML、CSS来构建跨平台桌面应用的工具。
 
-它将Chromium和Node.js合并到一个运行环境，并且打包成各个平台下可以运行的APP。
+它将Chromium和Node.js合并到一个运行环境，并且打包成各个平台下可以运行的APP。
 
 它是由GitHub的一个团队和一些活跃的贡献者一同维护的开源工具。
 
