@@ -25,3 +25,7 @@ def write(url, name):
 
 [完整代码](https://github.com/CRitsu/python.test/blob/master/faces/baozou_faces_crawler.py)
 
+
+**后续 18.3.27**
+
+抽时间整理了一下表情文件，发现重复图片和低像素图片太多，质量不是很高。不过也够用了。
