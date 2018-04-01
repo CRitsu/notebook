@@ -23,7 +23,7 @@ def write(url, name):
         f.write(r.content)
 ```
 
-[完整代码](https://github.com/CRitsu/python.test/blob/master/faces/baozou_faces_crawler.py)
+[完整代码](https://github.com/CRitsu/practice/blob/master/python/faces/baozou_faces_crawler.py)
 
 
 **后续 18.3.27**
