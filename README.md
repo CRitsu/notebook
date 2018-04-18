@@ -16,6 +16,8 @@
 
 以上。
 
+## [Rencently ToDo list](recently/recently-todo-list.md)
+
 # Editing
 
 [VDMA](recently/create-visual-data-manipulator-app.md)
@@ -23,7 +25,5 @@
 [About Electron](recently/about-electron.md)
 
 [Rebuild Blog](recently/rebuild-blog.md)
-
-[Rencently ToDo list](recently/recently-todo-list.md)
 
 [About Immutable](recently/about-immutable.md)
