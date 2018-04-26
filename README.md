@@ -16,6 +16,20 @@
 
 以上。
 
+# Code Sample/Demo
+
+这里记录的各种技术性文章或许有些代码片段。
+
+也有些是完整的程序代码。
+
+不过这里我不打算放代码，所有练习性质的代码都放在下面这个库。
+
+时不时整理一下。
+
+https://github.com/CRitsu/practice
+
+![nothing](images/nothing.png)
+
 ## [Rencently ToDo list](recently/recently-todo-list.md)
 
 # Editing
