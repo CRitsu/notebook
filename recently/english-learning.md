@@ -10,23 +10,51 @@
 
 # 学习方式 About The Ways to Study
 
+书籍只有语法相关的才是有用的，这可以当作一个语法索引词典。一般学习的方式应该是阅读导向的，在技术文档和一般的阅读中解决遇到的各种英文问题，对于发音或者一些难搞的问题可以在 Youtube 上寻找相关的教程视频，一般都有资源。
+
+阅读的锻炼仅在于认知，高效率的阅读更是忽视其他能力的锻炼。提升英语学习的效率还需要写作和翻译的训练，这有助于将认知水平的英语提升至掌握的水平。
+
+这是我对学习英语的一点总结。
+
 * BOOK
 * Youtube
 * Reading
 
+关于写作，在日常的练习以外可以对之前的文章进行翻译来进行锻炼。
+
 # 发音笔记 Memo of The Pronunciation
+
+## 发音难点&技巧
+
+学习外语发音时人们经常犯的错误就是将母语类似的发音带入外语的发音中。有些发音我们耳朵听到是熟悉的音，但是发音的方式并非我们熟悉的方式，口型和舌头的位置以及动作在发音中起到至关作用，那些我们耳熟的类似音，或许在外国人听来是差别迥异的不同的音。
+
+当我们遇到一个发音的困难点，可以查一下这个发音的口型和舌头动作，一般在这样的了解中都能解决发音的问题，有些即刻可以让你发出正确的音，有些可能需要一周时间的练习来让身体熟悉。
 
 * Light L / Dark L 中文没有的音
 * θ / ð 中文没有的音
 * æ / ɔ 口型和舌头位置的重要性
 
+## 发音区别（英式·美式）
+
+了解不同口音的区别有助于理解不同英语国家的各种差异，也能长点见识。
+
+* r 的区别：car
+* schedule 英美发音完全不同
+* t 的区别：water、little（英式 t 的音清晰，美式浊化为 d 音）
+
 # 语法笔记 Memo of The Grammar
+
+了解语法就是了解英语的游戏规则，在这个规则下我们才能打好这个游戏。
+
+## About tense
 
 past simple/negative/questions
 * past simple is ofen -ed
 * but there are some irragular verbs
 * negative is didn't + infinitive
 * questions is did/didn't + infinitive 
+
+## Other
 
 has => only thiry person singular
 
