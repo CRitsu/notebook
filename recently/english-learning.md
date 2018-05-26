@@ -38,9 +38,14 @@
 
 了解不同口音的区别有助于理解不同英语国家的各种差异，也能长点见识。
 
+
 * r 的区别：car
 * schedule 英美发音完全不同
 * t 的区别：water、little（英式 t 的音清晰，美式浊化为 d 音）
+
+## 连读和丢音
+
+* Drop T and D sounds 词尾为 T 和 D 音的时候如果下一个词首为辅音时丢弃 T 或 D 音，这个规则可以方便发音
 
 # 语法笔记 Memo of The Grammar
 
