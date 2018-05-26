@@ -10,8 +10,24 @@
 
 # 学习方式 About The Ways to Study
 
+* BOOK
+* Youtube
+* Reading
+
 # 发音笔记 Memo of The Pronunciation
 
+* Light L / Dark L 中文没有的音
+* θ / ð 中文没有的音
+* æ / ɔ 口型和舌头位置的重要性
+
 # 语法笔记 Memo of The Grammar
+
+past simple/negative/questions
+* past simple is ofen -ed
+* but there are some irragular verbs
+* negative is didn't + infinitive
+* questions is did/didn't + infinitive 
+
+has => only thiry person singular
 
 # 词汇笔记 Memo of The Vocabulary
