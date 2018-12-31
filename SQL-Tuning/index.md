@@ -35,7 +35,7 @@ tags:
 除此之外还会稍微记录一下下面这些解决方案，这些方案有些是研讨中还没有运用到实际问题上去的，不过都是些确实有效果的方法：
 
 - 使用 partition 表分区提高效率；
-- 使用 `nologging` 减少 redo log 提高写入效率；
+- 减少 log 提高写入效率；
 - 分割复杂 SQL 为多个简单 SQL，用中间表减少内存负担；
 - 用 `merge` 代替 `update` 做数据更新提高效率；
 - 压缩表，利用空闲 CPU 减少 IO 时间。
@@ -144,4 +144,103 @@ tags:
 
 创建表分区虽然没有用来解决这次遇到的问题，但是实际上当初设计表的时候已经是做过分区的了。
 
+表分区具体的作用是根据一定条件将一张大表分为几个不同的 `partition`，对外部来说这张表还是一个整体，但是优化器会自动判断，在符合条件的情况下访问对应的分区来提高效率。当然也可以在 SQL 语句中表名后面添加 `partition(partition_name)` 小句来指定访问哪个分区。
 
+举一个具体的例子来说，假设顾客表中有两种类型的顾客，`企业` 顾客和 `个人` 顾客，这张表有 1 亿数据，如果我们按照顾客类型来给表进行分区，并且刚好每个分区有 5 千万数据的话，这时如果我们查询某个 `企业` 顾客的数据，查找范围就会从原本的 1 亿数据直接降到 5 千万数据，效率可谓直接提升一倍。
+
+这个例子的 DDL 可能是下面这样的：
+
+```sql
+CREATE TABLE customer (
+  id NUMBER,
+  name VARCHAR2(256),
+  customer_type VARCHAR2(20),
+  -- other fields
+) PARTITION BY LIST (customer_type) (
+  PARTITION customer_enterprise VALUES ('enterprise'),
+  PARTITION customer_individual VALUES ('individual')
+);
+```
+
+> 表分区仅在企业版本可用。
+
+官方文档建议的应该考虑创建表分区的场景：
+
+- 表占空间大于 2G 以上；
+- 表包含历史数据，典型的例子是按照月份整理的数据，仅更新当前月份的数据，而其他 11 个月的数据都是只读的；
+- 表的内容必须分布到不同存储设备上。
+
+参考资料：
+
+- [2 Partitioning Concepts](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/vldbg/partition-concepts.html#GUID-E849DE8A-547D-4A2E-9324-706CAF574754)
+
+**减少 log 提高写入效率**
+
+Oracle 中在执行 DML 语句时会产生 `UNDO` 和 `REDO` 日志来保护数据的完整性和安全性。`UNDO` 日志用来做事务的回滚，`REDO` 日志用来恢复事务。但是在大数据的情况下，大量的日志会很大程度地拉低执行效率。这时可以使用 `/*+ APPEND */` 来减少甚至不做 `UNDO` 日志，配合 `nologging` 来减少 `REDO` 日志，以此来提高执行效率。
+
+使用 `/*+ APPEND */` 的 SQL 语句看起来是这样的。
+
+```sql
+INSERT /*+ APPEND */ INTO target_table (
+  target_values,
+  -- ...
+)
+```
+
+使用 `nologging` 有两种方式，一种是从表定义上设定。
+
+```sql
+ALTER TABLE target_table NOLOGGING;
+```
+
+或者写在 DML 语句中。
+
+```sql
+INSERT /*+ APPEND */ INTO target_table NOLOGGING (
+  target_values,
+  -- ...
+)
+```
+
+**分割复杂 SQL 为多个简单 SQL，用中间表减少内存负担**
+
+我们遇到的一些问题中，有一些比较复杂的 SQL 用 `with as` 做了一堆子查询，然后再将这些结果 `union` 到一起成为一个临时表，然后拿这个临时表继续往后面 `with as` 出更多的临时表...以此类推的情况，单独拿出其中每一个 `as` 小句出来执行效率都是可以接受的，但是由于 `union` 等操作花费时间比较长，占用资源无法释放等于提升了 cost。
+
+对于这种情况，我们将复杂 SQL 分割成几条不那么复杂的 SQL，比如上面说的 `union` 的问题，实际代码上将 3 个子查询结果 `union` 到了一起，修改后在中间加一个中间表，三串子查询也变成三个独立的 SQL 语句，分别向中间表中做 3 次插入操作，以此来避免 `union`。
+
+当然这样也带来了一些其他的问题，比如写中间表的操作会带来很多额外的 IO 成本，如果后续处理数据不是很多的话，还会让原本执行效率高的的操作因为多了一个写中间表的 IO 成本而拉低执行效率。
+
+一个真实的例子是，我们有一条 SQL 文要更新 1 万条左右的数据，但是中间访问了几张 1 亿多条数据的大表所以造成执行效率很慢，我们通过添加了中间表的方式，将一个重复多次的子查询结果固定到一张中间表，数据一共四千八百万，IO 操作花了大半个小时。对于这次调整的结果来说确实提升了执行效率，但是更新 1 万条数据的情况属于特殊情况，平时可能只更新少量的数据，却由于多了这么一个 IO 操作导致每次无论最终处理数据量，这大半个小时的时间都是避免不了的了。
+
+**用 `merge` 代替 `update` 做数据更新提高效率**
+
+遇到性能问题的 SQL 有相当一部分是更新操作，甚至有一个任务要更新 700 万数据的 1 个 Flag，因为写满 `UNDO` 空间死活跑不过去的。可想而知更新操作是非常消耗资源的。
+
+Oracle 中有一个 `merge` 语句，原本是用来聚合 `insert` 和 `update` 操作的，但是在新版本中可以单独做更新或者插入了，从网上资料中我们了解到 `merge` 操作比单独的 `update` 操作执行效率更高，于是将有问题的几个 SQL 用 `merge` 改写试了试。
+
+其结果是，一条更新 45 万数据的 `update` 需要跑 7 个小时的操作，使用 `merge` 只花了 50 分钟就完成了。目前这个方案正在研讨中，还没有最终决定，但是使用 `merge` 可以提升更新效率是毋庸置疑的。
+
+```sql
+MERGE INTO table_a A USING table_b B
+ON (conditions)
+WHEN MATCHED THEN
+  UPDATE SET A.fields = B.fields
+WHEN NOT MATCHED THEN
+  INSERT(field_names) VALUES(field_values);
+```
+
+如果仅做更新操作，`WHEN NOT MATCHED THEN` 后面的语句可以不需要。
+
+**压缩表，利用空闲 CPU 减少 IO 时间**
+
+作为最后的手段，压缩表也是提升执行效率的大杀器。
+
+压缩表的原理是，给相同数据创建字典表，每次有相同数据进来，数据库将不储存原始数据，而仅储存字典表的一个引用。好处是压缩了表空间，大幅减少了 IO 操作，不过缺点也很明显，会显著提高 CPU 使用率。
+
+对我们项目来说，数据库使用独立服务器，CPU 经常是闲置的，所以压缩表没有太大负担。
+
+```sql
+ALTER TABLE target_table COMPRESS;
+```
+
+// TODO reproduce
